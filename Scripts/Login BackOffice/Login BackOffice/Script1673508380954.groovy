@@ -10,7 +10,9 @@ import com.kms.katalon.core.model.FailureHandling as FailureHandling
 import com.kms.katalon.core.testcase.TestCase as TestCase
 import com.kms.katalon.core.testdata.TestData as TestData
 import com.kms.katalon.core.testng.keyword.TestNGBuiltinKeywords as TestNGKW
-import com.kms.katalon.core.testobject.TestObject as TestObject
+import com.kms.katalon.core.testobject.ConditionType
+import com.kms.katalon.core.testobject.TestObject
+import com.kms.katalon.core.util.KeywordUtil
 import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
 import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI
 import com.kms.katalon.core.windows.keyword.WindowsBuiltinKeywords as Windows
@@ -19,17 +21,37 @@ import org.openqa.selenium.Keys as Keys
 
 WebUI.openBrowser('')
 
-WebUI.navigateToUrl('https://kfcjv-staging-3f3f4.firebaseapp.com/login')
-
+WebUI.navigateToUrl(GlobalVariable.Url)
 WebUI.maximizeWindow()
 
-WebUI.setText(findTestObject('Object Repository/Login_BO/input_Remember Me_email'), 'admin@dana.ffi.co.id')
+TestObject emailField = new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='email']")
+TestObject passField = new TestObject().addProperty('xpath', ConditionType.EQUALS, "//input[@id='password']")
+TestObject rememberChk = new TestObject().addProperty('xpath', ConditionType.EQUALS, "//label[@for='remember']")
+TestObject signInButton = new TestObject().addProperty('xpath', ConditionType.EQUALS, "//button[contains(text(),'Sign In')]")
+TestObject welcome = new TestObject().addProperty('xpath', ConditionType.EQUALS, "//li//span[text()='Dashboard']")
+TestObject logo = new TestObject().addProperty('xpath', ConditionType.EQUALS, "//img[contains(@src,'kfcLogo')]")
 
-WebUI.setEncryptedText(findTestObject('Object Repository/Login_BO/input_Remember Me_password'), 'RigbBhfdqOBGNlJIWM1ClA==')
+WebUI.setText(emailField, "admin@dana.ffi.co.id")
+WebUI.setText(passField, "12345678")
+if (GlobalVariable.remember == "Yes") {
+	WebUI.check(rememberChk)
+}
+WebUI.click(signInButton)
 
-WebUI.click(findTestObject('Object Repository/Login_BO/button_Sign In'))
+//boolean val1 = WebUI.verifyElementPresent(welcome, 3)
+//boolean val2 = WebUI.verifyElementPresent(logo, 3)
+if ((WebUI.verifyElementPresent(welcome, 3)) || (WebUI.verifyElementPresent(logo, 3))) {
+//if (val1 == true || val2 == true) {
+	KeywordUtil.markPassed("Anda Berhasil Login")
+} else {
+	KeywordUtil.markFailed("Anda Gagal Login")
+}
 
-// WebUI.click(findTestObject('Object Repository/Login_BO/button_Dashboard___BVID__28__BV_toggle_'))
+//if (WebUI.verifyElementPresent(welcome, 3)) {
+//	KeywordUtil.markPassed("Anda Berhasil Login")
+//} else {
+//	KeywordUtil.markFailed("Anda Gagal Login")
+//}
 
-//WebUI.click(findTestObject('Object Repository/Login_BO/a_Logout'))
+
 
